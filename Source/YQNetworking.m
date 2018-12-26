@@ -96,9 +96,9 @@ static inline NSString *cachePath() {
         [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
         
         if (error) {
-            NSLog(@"YQNetworking clear caches error: %@", error);
+            YQAppLog(@"YQNetworking clear caches error: %@", error);
         } else {
-            NSLog(@"YQNetworking clear caches ok");
+            YQAppLog(@"YQNetworking clear caches ok");
         }
     }
 }
@@ -619,7 +619,6 @@ static inline NSString *cachePath() {
     
     NSString *absolute = [self absoluteUrlWithPath:url];
     
-    NSLog(@"parameters==%@", parameters);
     AFHTTPSessionManager *manager = [self manager];
     YQURLSessionTask *session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
@@ -708,16 +707,13 @@ static inline NSString *cachePath() {
             }
             
             if ([self isDebug]) {
-                YQAppLog(@"Download success for url %@",
-                         [self absoluteUrlWithPath:url]);
+                YQAppLog(@"Download success for url %@",[self absoluteUrlWithPath:url]);
             }
         } else {
             [self handleCallbackWithError:error fail:failure];
             
             if ([self isDebug]) {
-                YQAppLog(@"Download fail for url %@, reason : %@",
-                         [self absoluteUrlWithPath:url],
-                         [error description]);
+                YQAppLog(@"Download fail for url %@, reason : %@",[self absoluteUrlWithPath:url],[error description]);
             }
         }
     }];
@@ -826,32 +822,14 @@ static inline NSString *cachePath() {
 }
 
 + (void)logWithSuccessResponse:(id)response url:(NSString *)url params:(NSDictionary *)params {
-    YQAppLog(@"\n");
-    YQAppLog(@"\nRequest success, URL: %@\n params:%@\n response:%@\n\n",
-             [self generateGETAbsoluteURL:url params:params],
-             params,
-             [self tryToParseData:response]);
+    YQAppLog(@"\nRequest success, URL: %@\n params:%@\n response:%@\n\n",[self generateGETAbsoluteURL:url params:params],params,[self tryToParseData:response]);
 }
 
 + (void)logWithFailError:(NSError *)error url:(NSString *)url params:(id)params {
-    NSString *format = @" params: ";
-    if (params == nil || ![params isKindOfClass:[NSDictionary class]]) {
-        format = @"";
-        params = @"";
-    }
-    
-    YQAppLog(@"\n");
     if ([error code] == NSURLErrorCancelled) {
-        YQAppLog(@"\nRequest was canceled mannully, URL: %@ %@%@\n\n",
-                 [self generateGETAbsoluteURL:url params:params],
-                 format,
-                 params);
+        YQAppLog(@"\nRequest was canceled manually, URL: %@\n params:%@\n\n",[self generateGETAbsoluteURL:url params:params],params);
     } else {
-        YQAppLog(@"\nRequest error, URL: %@ %@%@\n errorInfos:%@\n\n",
-                 [self generateGETAbsoluteURL:url params:params],
-                 format,
-                 params,
-                 [error localizedDescription]);
+        YQAppLog(@"\nRequest error, URL: %@\n params:%@\n errorInfos:%@\n\n",[self generateGETAbsoluteURL:url params:params],params,[error localizedDescription]);
     }
 }
 
