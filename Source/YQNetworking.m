@@ -522,8 +522,8 @@ static inline NSString *cachePath() {
 
 + (YQURLSessionTask *)uploadWithImage:(UIImage *)image
                                   url:(NSString *)url
-                             filename:(NSString *)filename
                                  name:(NSString *)name
+                             filename:(NSString *)filename
                              mimeType:(NSString *)mimeType
                            parameters:(NSDictionary *)parameters
                              progress:(YQUploadProgress)progress
@@ -539,8 +539,10 @@ static inline NSString *cachePath() {
             YQAppLog(@"URLString无效，无法生成URL。可能是URL中有中文，请尝试Encode URL");
             return nil;
         }
+    }    
+    if (url==nil || name==nil) {
+        return nil;
     }
-    
     if ([self isEncodeUrl]) {
         url = [self encodeUrl:url];
     }
@@ -549,18 +551,15 @@ static inline NSString *cachePath() {
     
     AFHTTPSessionManager *manager = [self manager];
     YQURLSessionTask *session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        NSData *imageData = UIImageJPEGRepresentation(image, 1);
-        
+        NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
         NSString *imageFileName = filename;
         if (filename == nil || ![filename isKindOfClass:[NSString class]] || filename.length == 0) {
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.dateFormat = @"yyyyMMddHHmmss";
-            NSString *str = [formatter stringFromDate:[NSDate date]];
-            imageFileName = [NSString stringWithFormat:@"%@.jpg", str];
+            imageFileName = [NSString stringWithFormat:@"%@.jpg", [formatter stringFromDate:[NSDate date]]];
         }
-        
         // 上传图片，以文件流的格式
-        [formData appendPartWithFileData:imageData name:name fileName:imageFileName mimeType:mimeType];
+        [formData appendPartWithFileData:imageData name:name fileName:imageFileName mimeType:mimeType?:@"image/jpeg"];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         if (progress) {
             progress(uploadProgress.completedUnitCount, uploadProgress.totalUnitCount);
@@ -594,8 +593,7 @@ static inline NSString *cachePath() {
 
 + (YQURLSessionTask *)uploadWithMultipleImage:(NSMutableArray *)imageArr
                                           url:(NSString *)url
-                                     filename:(NSString *)filename
-                                         name:(NSString *)name
+                                        names:(NSArray *)nameArr
                                      mimeType:(NSString *)mimeType
                                    parameters:(NSDictionary *)parameters
                                      progress:(YQUploadProgress)progress
@@ -612,7 +610,18 @@ static inline NSString *cachePath() {
             return nil;
         }
     }
-    
+    if (imageArr==nil || imageArr.count<=0) {
+        return nil;
+    }
+    if (url==nil) {
+        return nil;
+    }
+    if (nameArr==nil || nameArr.count<=0) {
+        return nil;
+    }
+    if (nameArr.count < imageArr.count) {
+        return nil;
+    }
     if ([self isEncodeUrl]) {
         url = [self encodeUrl:url];
     }
@@ -621,23 +630,15 @@ static inline NSString *cachePath() {
     
     AFHTTPSessionManager *manager = [self manager];
     YQURLSessionTask *session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        
-        for(int i=0; i<imageArr.count; i++) {
-            
-            
-            
-            UIImage *eachImg = [imageArr objectAtIndex:i];
-            NSData *eachImgData = UIImageJPEGRepresentation(eachImg, 0.5);
+
+        for (NSInteger i=0; i<imageArr.count; i++) {
             //上传的参数名
-            
-            NSString*name=[NSString stringWithFormat:@"idPic%d",i];
-            
+            NSString *name = nameArr[i];
             //上传的filename
-            
-            NSString*fileName=[NSString stringWithFormat:@"idPic%d.jpg",i];
-            
-            [formData appendPartWithFileData:eachImgData name:name fileName:fileName mimeType:@"image/jpeg"];
+            NSString *fileName = [NSString stringWithFormat:@"%@.jpg",name];
+            [formData appendPartWithFileData:UIImageJPEGRepresentation(imageArr[i], 1.0) name:name fileName:fileName mimeType:mimeType?:@"image/jpeg"];
         }
+
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         if (progress) {
             progress(uploadProgress.completedUnitCount, uploadProgress.totalUnitCount);

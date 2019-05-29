@@ -267,8 +267,8 @@ typedef void(^YQResponseFail)(NSError *error);
  *
  *    @param image            图片对象
  *    @param url                上传图片的接口路径，如/path/images/
- *    @param filename        给图片起一个名字，默认为当前日期时间,格式为"yyyyMMddHHmmss"，后缀为`jpg`
  *    @param name                与指定的图片相关联的名称，这是由后端写接口的人指定的，如imagefiles
+ *    @param filename        给图片起一个名字，默认为当前日期时间,格式为"yyyyMMddHHmmss"，后缀为`jpg`
  *    @param mimeType        默认为image/jpeg
  *    @param parameters    参数
  *    @param progress        上传进度
@@ -279,8 +279,8 @@ typedef void(^YQResponseFail)(NSError *error);
  */
 + (YQURLSessionTask *)uploadWithImage:(UIImage *)image
                                   url:(NSString *)url
-                             filename:(NSString *)filename
                                  name:(NSString *)name
+                             filename:(NSString *)filename
                              mimeType:(NSString *)mimeType
                            parameters:(NSDictionary *)parameters
                              progress:(YQUploadProgress)progress
@@ -294,8 +294,7 @@ typedef void(^YQResponseFail)(NSError *error);
  *
  *    @param imageArr            图片对象
  *    @param url                上传图片的接口路径，如/path/images/
- *    @param filename        给图片起一个名字，默认为当前日期时间,格式为"yyyyMMddHHmmss"，后缀为`jpg`
- *    @param name                与指定的图片相关联的名称，这是由后端写接口的人指定的，如imagefiles
+ *    @param nameArr            与指定的图片相关联的名称，与imageArr一一对应，这是由后端写接口的人指定的
  *    @param mimeType        默认为image/jpeg
  *    @param parameters    参数
  *    @param progress        上传进度
@@ -306,8 +305,7 @@ typedef void(^YQResponseFail)(NSError *error);
  */
 + (YQURLSessionTask *)uploadWithMultipleImage:(NSMutableArray *)imageArr
                                           url:(NSString *)url
-                                     filename:(NSString *)filename
-                                         name:(NSString *)name
+                                        names:(NSArray *)nameArr
                                      mimeType:(NSString *)mimeType
                                    parameters:(NSDictionary *)parameters
                                      progress:(YQUploadProgress)progress
