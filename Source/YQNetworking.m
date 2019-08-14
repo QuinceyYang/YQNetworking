@@ -610,13 +610,13 @@ static inline NSString *cachePath() {
             return nil;
         }
     }
-    if (imageArr==nil || imageArr.count<=0) {
+    if (imageArr==nil) {
         return nil;
     }
     if (url==nil) {
         return nil;
     }
-    if (nameArr==nil || nameArr.count<=0) {
+    if (nameArr==nil) {
         return nil;
     }
     if (nameArr.count < imageArr.count) {
