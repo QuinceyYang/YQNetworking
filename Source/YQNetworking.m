@@ -775,9 +775,15 @@ static inline NSString *cachePath() {
             }
             
             manager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
-            
+
+#if 0
+            //进行https证书校验
             NSSet *certificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
             AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:certificates];
+#else
+            //不进行https证书校验
+            AFSecurityPolicy *policy = [AFSecurityPolicy defaultPolicy];
+#endif
             manager.securityPolicy = policy;
             
             for (NSString *key in sg_httpHeaders.allKeys) {
