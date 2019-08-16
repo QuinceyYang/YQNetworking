@@ -829,7 +829,11 @@ static inline NSString *cachePath() {
 }
 
 + (void)logWithSuccessResponse:(id)response url:(NSString *)url params:(NSDictionary *)params {
-    YQAppLog(@"\nRequest success, URL: %@\n params:%@\n response:%@\n\n",[self generateGETAbsoluteURL:url params:params],params,[self tryToParseData:response]);
+    id parseData = [self tryToParseData:response];
+    if ([parseData isKindOfClass:[NSArray class]] || [parseData isKindOfClass:[NSDictionary class]]) {
+        parseData = [NSString stringWithCString:[[parseData description] cStringUsingEncoding:NSUTF8StringEncoding] encoding:NSNonLossyASCIIStringEncoding];
+    }
+    YQAppLog(@"\nRequest success, URL: %@\n params:%@\n response:%@\n\n",[self generateGETAbsoluteURL:url params:params],params,parseData);
 }
 
 + (void)logWithFailError:(NSError *)error url:(NSString *)url params:(id)params {
